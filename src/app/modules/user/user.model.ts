@@ -1,5 +1,7 @@
 import { Schema, model } from "mongoose";
+import bcrypt from "bcrypt";
 import { TFullName, TUser } from "./user.interface";
+import config from "../../config";
 
 // schema for full name
 const fullNameSchema = new Schema<TFullName>({
@@ -99,6 +101,15 @@ const userSchema = new Schema<TUser>({
   },
 
   orders: [ordersSchema],
+});
+
+// hash user password
+userSchema.pre("save", async function (next) {
+  this.password = await bcrypt.hash(
+    this.password,
+    Number(config.bcrypt_salt_rounds),
+  );
+  next();
 });
 
 const User = model<TUser>("User", userSchema);
