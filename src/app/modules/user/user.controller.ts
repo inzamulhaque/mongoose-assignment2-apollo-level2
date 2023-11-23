@@ -57,7 +57,7 @@ const getAllUser = async (req: Request, res: Response) => {
   }
 };
 
-// Retrieve a specific user by ID
+// Retrieve a specific user by userId
 const getUserByUserId = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
