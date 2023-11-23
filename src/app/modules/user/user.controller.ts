@@ -1,6 +1,10 @@
 import { Request, Response } from "express";
 import UserValidationSchema from "./user.validation";
-import { createNewUserIntoDB, getAllUserFromDB } from "./user.service";
+import {
+  createNewUserIntoDB,
+  getAllUserFromDB,
+  getUserByUserIdFromDB,
+} from "./user.service";
 
 // Create a new user
 const createNewUser = async (req: Request, res: Response) => {
@@ -53,4 +57,28 @@ const getAllUser = async (req: Request, res: Response) => {
   }
 };
 
-export { createNewUser, getAllUser };
+// Retrieve a specific user by ID
+const getUserByUserId = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    // parse userId and find user from DB
+    const result = await getUserByUserIdFromDB(Number(userId));
+
+    res.json({
+      success: true,
+      message: "User fetched successfully!",
+      data: result,
+    });
+  } catch (error) {
+    res.json({
+      success: false,
+      message: "User not found",
+      error: {
+        code: 404,
+        description: "User not found!",
+      },
+    });
+  }
+};
+
+export { createNewUser, getAllUser, getUserByUserId };

@@ -26,4 +26,10 @@ const getAllUserFromDB = async () => {
   return result;
 };
 
-export { createNewUserIntoDB, getAllUserFromDB };
+// get specific user by userId
+const getUserByUserIdFromDB = async (userId: number) => {
+  const result = await User.findOne({ userId }).select("-password");
+  return result;
+};
+
+export { createNewUserIntoDB, getAllUserFromDB, getUserByUserIdFromDB };
