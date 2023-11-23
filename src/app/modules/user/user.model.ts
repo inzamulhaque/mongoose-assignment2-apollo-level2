@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose";
 import bcrypt from "bcrypt";
-import { TFullName, TUser } from "./user.interface";
+import { TFullName, TUser, TUserModel } from "./user.interface";
 import config from "../../config";
 
 // schema for full name
@@ -112,6 +112,12 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-const User = model<TUser>("User", userSchema);
+// creating static method for checking userId valid or not
+userSchema.statics.isUserIdExists = async function (userId) {
+  const userFound = await User.findOne({ userId });
+  return userFound;
+};
+
+const User = model<TUser, TUserModel>("User", userSchema);
 
 export default User;

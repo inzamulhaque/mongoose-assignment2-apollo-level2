@@ -69,10 +69,10 @@ const getUserByUserId = async (req: Request, res: Response) => {
       message: "User fetched successfully!",
       data: result,
     });
-  } catch (error) {
+  } catch (error: any) {
     res.json({
       success: false,
-      message: "User not found",
+      message: error.message || "User not found",
       error: {
         code: 404,
         description: "User not found!",

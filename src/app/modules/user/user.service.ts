@@ -28,6 +28,10 @@ const getAllUserFromDB = async () => {
 
 // get specific user by userId
 const getUserByUserIdFromDB = async (userId: number) => {
+  if ((await User.isUserIdExists(userId)) === null) {
+    throw new Error("User ID not exists");
+  }
+
   const result = await User.findOne({ userId }).select("-password");
   return result;
 };
