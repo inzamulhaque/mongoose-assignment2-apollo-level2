@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import UserValidationSchema from "./user.validation";
-import { createNewUserIntoDB } from "./user.service";
+import { createNewUserIntoDB, getAllUserFromDB } from "./user.service";
 
-// create a new user
+// Create a new user
 const createNewUser = async (req: Request, res: Response) => {
   try {
     const user = req.body;
@@ -13,7 +13,7 @@ const createNewUser = async (req: Request, res: Response) => {
     // Insert data into the database
     const result = await createNewUserIntoDB(zodParseUser);
 
-    const { password, ...others } = result.toObject();
+    const { password, orders, ...others } = result.toObject();
 
     res.json({
       success: true,
@@ -32,4 +32,25 @@ const createNewUser = async (req: Request, res: Response) => {
   }
 };
 
-export { createNewUser };
+// Retrieve a list of all users
+const getAllUser = async (req: Request, res: Response) => {
+  try {
+    const result = await getAllUserFromDB();
+    res.json({
+      success: true,
+      message: "Users fetched successfully!",
+      data: result,
+    });
+  } catch (error) {
+    res.json({
+      success: false,
+      message: "User not found",
+      error: {
+        code: 404,
+        description: "User not found!",
+      },
+    });
+  }
+};
+
+export { createNewUser, getAllUser };
