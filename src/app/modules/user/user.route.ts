@@ -3,6 +3,7 @@ import {
   addNewOrders,
   createNewUser,
   deleteUserByUserId,
+  getAllOrdersForASingleUser,
   getAllUser,
   getUserByUserId,
   updateUserInfoByUserId,
@@ -21,5 +22,7 @@ router.put("/:userId", updateUserInfoByUserId);
 router.delete("/:userId", deleteUserByUserId);
 
 router.put("/:userId/orders", addNewOrders);
+
+router.get("/:userId/orders", getAllOrdersForASingleUser);
 
 export const UserRoutes = router;

@@ -82,6 +82,16 @@ const addOrderIntoDB = async (userId: number, order: TOrders) => {
   return result;
 };
 
+// get single user orders from DB
+const getSignleUserOrdersFromDB = async (userId: number) => {
+  if ((await User.isUserIdExists(userId)) === null) {
+    throw new Error("User ID not exists");
+  }
+
+  const result = await User.findOne({ userId }).select("orders -_id");
+  return result;
+};
+
 export {
   createNewUserIntoDB,
   getAllUserFromDB,
@@ -89,4 +99,5 @@ export {
   updateUserInfoIntoDB,
   deleteUserFromDB,
   addOrderIntoDB,
+  getSignleUserOrdersFromDB,
 };

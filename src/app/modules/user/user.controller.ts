@@ -7,6 +7,7 @@ import {
   createNewUserIntoDB,
   deleteUserFromDB,
   getAllUserFromDB,
+  getSignleUserOrdersFromDB,
   getUserByUserIdFromDB,
   updateUserInfoIntoDB,
 } from "./user.service";
@@ -185,6 +186,29 @@ const addNewOrders = async (req: Request, res: Response) => {
   }
 };
 
+// Retrieve all orders for a specific user
+const getAllOrdersForASingleUser = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const result = await getSignleUserOrdersFromDB(Number(userId));
+
+    res.json({
+      success: true,
+      message: "Order fetched successfully!",
+      data: result,
+    });
+  } catch (err: any) {
+    res.json({
+      success: false,
+      message: "User not found",
+      error: {
+        code: 404,
+        description: err.message || "User not found!",
+      },
+    });
+  }
+};
+
 export {
   createNewUser,
   getAllUser,
@@ -192,4 +216,5 @@ export {
   updateUserInfoByUserId,
   deleteUserByUserId,
   addNewOrders,
+  getAllOrdersForASingleUser,
 };
