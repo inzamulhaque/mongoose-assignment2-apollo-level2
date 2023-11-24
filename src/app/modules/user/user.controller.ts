@@ -1,12 +1,15 @@
 import { Request, Response } from "express";
-import UserValidationSchema from "./user.validation";
+import UserValidationSchema, {
+  OrdersValidationSchema,
+} from "./user.validation";
 import {
+  addOrderIntoDB,
   createNewUserIntoDB,
   getAllUserFromDB,
   getUserByUserIdFromDB,
   updateUserInfoIntoDB,
 } from "./user.service";
-import { TUser } from "./user.interface";
+import { TOrders, TUser } from "./user.interface";
 
 // Create a new user
 const createNewUser = async (req: Request, res: Response) => {
@@ -88,6 +91,7 @@ const getUserByUserId = async (req: Request, res: Response) => {
   }
 };
 
+// Update user information
 const updateUserInfoByUserId = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
@@ -123,4 +127,61 @@ const updateUserInfoByUserId = async (req: Request, res: Response) => {
   }
 };
 
-export { createNewUser, getAllUser, getUserByUserId, updateUserInfoByUserId };
+// Delete a user
+const deleteUserByUserId = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+  } catch (err: any) {
+    res.json({
+      success: false,
+      message: "User not found",
+      error: {
+        code: 404,
+        description: err.message || "User not found!",
+      },
+    });
+  }
+};
+
+// add new orders
+const addNewOrders = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const orders = req.body;
+    const zodParseOrders = OrdersValidationSchema.safeParse(orders);
+
+    // handle validation failure
+    if (!zodParseOrders.success) {
+      throw new Error("Please provide correct data");
+    }
+
+    const result = await addOrderIntoDB(
+      Number(userId),
+      zodParseOrders.data as TOrders,
+    );
+
+    res.json({
+      success: true,
+      message: "Order created successfully!",
+      data: null,
+    });
+  } catch (err: any) {
+    res.json({
+      success: false,
+      message: "User not found",
+      error: {
+        code: 404,
+        description: err.message || "User not found!",
+      },
+    });
+  }
+};
+
+export {
+  createNewUser,
+  getAllUser,
+  getUserByUserId,
+  updateUserInfoByUserId,
+  deleteUserByUserId,
+  addNewOrders,
+};

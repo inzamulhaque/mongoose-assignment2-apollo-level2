@@ -1,4 +1,4 @@
-import { TUser } from "./user.interface";
+import { TOrders, TUser } from "./user.interface";
 import User from "./user.model";
 
 const createNewUserIntoDB = async (user: TUser) => {
@@ -36,6 +36,7 @@ const getUserByUserIdFromDB = async (userId: number) => {
   return result;
 };
 
+// update user info into DB
 const updateUserInfoIntoDB = async (userId: number, newData: TUser) => {
   if ((await User.isUserIdExists(userId)) === null) {
     throw new Error("User ID not exists");
@@ -52,9 +53,29 @@ const updateUserInfoIntoDB = async (userId: number, newData: TUser) => {
   return result;
 };
 
+// add order into DB
+const addOrderIntoDB = async (userId: number, order: TOrders) => {
+  if ((await User.isUserIdExists(userId)) === null) {
+    throw new Error("User ID not exists");
+  }
+
+  const result = await User.updateOne({ userId }, [
+    {
+      $set: {
+        orders: {
+          $concatArrays: ["$orders", [order]],
+        },
+      },
+    },
+  ]);
+
+  return result;
+};
+
 export {
   createNewUserIntoDB,
   getAllUserFromDB,
   getUserByUserIdFromDB,
   updateUserInfoIntoDB,
+  addOrderIntoDB,
 };
