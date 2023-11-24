@@ -4,7 +4,9 @@ import {
   createNewUserIntoDB,
   getAllUserFromDB,
   getUserByUserIdFromDB,
+  updateUserInfoIntoDB,
 } from "./user.service";
+import { TUser } from "./user.interface";
 
 // Create a new user
 const createNewUser = async (req: Request, res: Response) => {
@@ -12,10 +14,15 @@ const createNewUser = async (req: Request, res: Response) => {
     const user = req.body;
 
     // zod validation
-    const zodParseUser = UserValidationSchema.parse(user);
+    const zodParseUser = UserValidationSchema.safeParse(user);
+
+    // handle validation failure
+    if (!zodParseUser.success) {
+      throw new Error("Please provide correct data");
+    }
 
     // Insert data into the database
-    const result = await createNewUserIntoDB(zodParseUser);
+    const result = await createNewUserIntoDB(zodParseUser.data as TUser);
 
     const { password, orders, ...others } = result.toObject();
 
@@ -69,16 +76,51 @@ const getUserByUserId = async (req: Request, res: Response) => {
       message: "User fetched successfully!",
       data: result,
     });
-  } catch (error: any) {
+  } catch (err: any) {
     res.json({
       success: false,
-      message: error.message || "User not found",
+      message: "User not found",
       error: {
         code: 404,
-        description: "User not found!",
+        description: err.message || "User not found!",
       },
     });
   }
 };
 
-export { createNewUser, getAllUser, getUserByUserId };
+const updateUserInfoByUserId = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const user = req.body;
+
+    // zod validation
+    const zodParseUser = UserValidationSchema.safeParse(user);
+
+    // handle validation failure
+    if (!zodParseUser.success) {
+      throw new Error("Please provide correct data");
+    }
+
+    const result = await updateUserInfoIntoDB(
+      Number(userId),
+      zodParseUser.data as TUser,
+    );
+
+    res.json({
+      success: true,
+      message: "User updated successfully!",
+      data: result,
+    });
+  } catch (err: any) {
+    res.json({
+      success: false,
+      message: "User not found",
+      error: {
+        code: 404,
+        description: err.message || "User not found!",
+      },
+    });
+  }
+};
+
+export { createNewUser, getAllUser, getUserByUserId, updateUserInfoByUserId };

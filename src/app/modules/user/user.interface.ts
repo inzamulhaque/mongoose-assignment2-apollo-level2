@@ -33,4 +33,5 @@ export type TUser = {
 // for creating static
 export interface TUserModel extends Model<TUser> {
   isUserIdExists(userId: number): Promise<TUser | null>;
+  hashPassword(password: string): string;
 }

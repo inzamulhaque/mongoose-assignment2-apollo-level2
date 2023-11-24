@@ -15,8 +15,6 @@ const getAllUserFromDB = async () => {
       _id: 0,
       userId: 0,
       password: 0,
-      "fullName._id": 0,
-      "address._id": 0,
       hobbies: 0,
       isActive: 0,
       orders: 0,
@@ -32,8 +30,31 @@ const getUserByUserIdFromDB = async (userId: number) => {
     throw new Error("User ID not exists");
   }
 
-  const result = await User.findOne({ userId }).select("-password");
+  const result = await User.findOne({ userId }).select(
+    "-_id  -password -orders -__v",
+  );
   return result;
 };
 
-export { createNewUserIntoDB, getAllUserFromDB, getUserByUserIdFromDB };
+const updateUserInfoIntoDB = async (userId: number, newData: TUser) => {
+  if ((await User.isUserIdExists(userId)) === null) {
+    throw new Error("User ID not exists");
+  }
+
+  const password = await User.hashPassword(newData.password);
+
+  const result = await User.findOneAndUpdate(
+    { userId },
+    { $set: { ...newData, password } },
+    { new: true },
+  ).select("-_id -password -orders -__v");
+
+  return result;
+};
+
+export {
+  createNewUserIntoDB,
+  getAllUserFromDB,
+  getUserByUserIdFromDB,
+  updateUserInfoIntoDB,
+};

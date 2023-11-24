@@ -4,48 +4,57 @@ import { TFullName, TUser, TUserModel } from "./user.interface";
 import config from "../../config";
 
 // schema for full name
-const fullNameSchema = new Schema<TFullName>({
-  firstName: {
-    type: String,
-    required: [true, "Please provide First Name"],
+const fullNameSchema = new Schema<TFullName>(
+  {
+    firstName: {
+      type: String,
+      required: [true, "Please provide First Name"],
+    },
+    lastName: {
+      type: String,
+      required: [true, "Please provide Last Name"],
+    },
   },
-  lastName: {
-    type: String,
-    required: [true, "Please provide Last Name"],
-  },
-});
+  { _id: false },
+);
 
 // schema for user address
-const addressSchema = new Schema({
-  street: {
-    type: String,
-    required: [true, "Please provide the user street name"],
+const addressSchema = new Schema(
+  {
+    street: {
+      type: String,
+      required: [true, "Please provide the user street name"],
+    },
+    city: {
+      type: String,
+      required: [true, "Please provide the user city name"],
+    },
+    country: {
+      type: String,
+      required: [true, "Please provide the user country name"],
+    },
   },
-  city: {
-    type: String,
-    required: [true, "Please provide the user city name"],
-  },
-  country: {
-    type: String,
-    required: [true, "Please provide the user country name"],
-  },
-});
+  { _id: false },
+);
 
 // schema for orders
-const ordersSchema = new Schema({
-  productName: {
-    type: String,
-    required: [true, "Please provide the product name"],
+const ordersSchema = new Schema(
+  {
+    productName: {
+      type: String,
+      required: [true, "Please provide the product name"],
+    },
+    price: {
+      type: Number,
+      required: [true, "Please provide the product price"],
+    },
+    quantity: {
+      type: Number,
+      required: [true, "Please provide the order quantity"],
+    },
   },
-  price: {
-    type: Number,
-    required: [true, "Please provide the product price"],
-  },
-  quantity: {
-    type: Number,
-    required: [true, "Please provide the order quantity"],
-  },
-});
+  { _id: false },
+);
 
 // Main Schema
 const userSchema = new Schema<TUser>({
@@ -111,6 +120,13 @@ userSchema.pre("save", async function (next) {
   );
   next();
 });
+
+// hash user password for update user
+userSchema.statics.hashPassword = async function (pass: string) {
+  const password = await bcrypt.hash(pass, Number(config.bcrypt_salt_rounds));
+
+  return password;
+};
 
 // creating static method for checking userId valid or not
 userSchema.statics.isUserIdExists = async function (userId) {
