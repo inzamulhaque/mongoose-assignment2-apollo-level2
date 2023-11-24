@@ -5,6 +5,7 @@ import UserValidationSchema, {
 import {
   addOrderIntoDB,
   createNewUserIntoDB,
+  deleteUserFromDB,
   getAllUserFromDB,
   getUserByUserIdFromDB,
   updateUserInfoIntoDB,
@@ -131,6 +132,13 @@ const updateUserInfoByUserId = async (req: Request, res: Response) => {
 const deleteUserByUserId = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
+    const result = await deleteUserFromDB(Number(userId));
+
+    res.json({
+      success: true,
+      message: "User deleted successfully!",
+      data: null,
+    });
   } catch (err: any) {
     res.json({
       success: false,

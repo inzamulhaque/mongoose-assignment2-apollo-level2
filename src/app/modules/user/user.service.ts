@@ -53,6 +53,16 @@ const updateUserInfoIntoDB = async (userId: number, newData: TUser) => {
   return result;
 };
 
+// delete user from DB
+const deleteUserFromDB = async (userId: number) => {
+  if ((await User.isUserIdExists(userId)) === null) {
+    throw new Error("User ID not exists");
+  }
+
+  const result = await User.deleteOne({ userId });
+  return result;
+};
+
 // add order into DB
 const addOrderIntoDB = async (userId: number, order: TOrders) => {
   if ((await User.isUserIdExists(userId)) === null) {
@@ -77,5 +87,6 @@ export {
   getAllUserFromDB,
   getUserByUserIdFromDB,
   updateUserInfoIntoDB,
+  deleteUserFromDB,
   addOrderIntoDB,
 };
