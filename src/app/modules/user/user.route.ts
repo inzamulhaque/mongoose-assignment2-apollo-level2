@@ -1,6 +1,7 @@
 import express, { Router } from "express";
 import {
   addNewOrders,
+  calSingleUserOrdersTotalPrice,
   createNewUser,
   deleteUserByUserId,
   getAllOrdersForASingleUser,
@@ -24,5 +25,7 @@ router.delete("/:userId", deleteUserByUserId);
 router.put("/:userId/orders", addNewOrders);
 
 router.get("/:userId/orders", getAllOrdersForASingleUser);
+
+router.get("/:userId/orders/total-price", calSingleUserOrdersTotalPrice);
 
 export const UserRoutes = router;

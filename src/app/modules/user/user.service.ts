@@ -92,6 +92,39 @@ const getSignleUserOrdersFromDB = async (userId: number) => {
   return result;
 };
 
+// cost of single user orders
+const calOfSingleUserOrders = async (userId: number) => {
+  if ((await User.isUserIdExists(userId)) === null) {
+    throw new Error("User ID not exists");
+  }
+
+  const result = await User.aggregate([
+    { $match: { userId } },
+    { $unwind: "$orders" },
+    {
+      $addFields: {
+        "orders.totalPrice": {
+          $multiply: ["$orders.price", "$orders.quantity"],
+        },
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        totalPrice: { $sum: "$orders.totalPrice" },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        totalPrice: 1,
+      },
+    },
+  ]);
+
+  return result;
+};
+
 export {
   createNewUserIntoDB,
   getAllUserFromDB,
@@ -100,4 +133,5 @@ export {
   deleteUserFromDB,
   addOrderIntoDB,
   getSignleUserOrdersFromDB,
+  calOfSingleUserOrders,
 };

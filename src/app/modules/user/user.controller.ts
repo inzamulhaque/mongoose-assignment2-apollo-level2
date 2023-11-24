@@ -4,6 +4,7 @@ import UserValidationSchema, {
 } from "./user.validation";
 import {
   addOrderIntoDB,
+  calOfSingleUserOrders,
   createNewUserIntoDB,
   deleteUserFromDB,
   getAllUserFromDB,
@@ -29,12 +30,30 @@ const createNewUser = async (req: Request, res: Response) => {
     // Insert data into the database
     const result = await createNewUserIntoDB(zodParseUser.data as TUser);
 
-    const { password, orders, ...others } = result.toObject();
+    const {
+      userId,
+      username,
+      fullName,
+      age,
+      email,
+      isActive,
+      hobbies,
+      address,
+    } = result.toObject();
 
     res.json({
       success: true,
       message: "User created successfully!",
-      data: others,
+      data: {
+        userId,
+        username,
+        fullName,
+        age,
+        email,
+        isActive,
+        hobbies,
+        address,
+      },
     });
   } catch (error) {
     res.json({
@@ -209,6 +228,29 @@ const getAllOrdersForASingleUser = async (req: Request, res: Response) => {
   }
 };
 
+// Calculate Total Price of Orders for a Specific User
+const calSingleUserOrdersTotalPrice = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const result = await calOfSingleUserOrders(Number(userId));
+
+    res.json({
+      success: true,
+      message: "Total price calculated successfully!",
+      data: result[0] || { totalPrice: 0 },
+    });
+  } catch (err: any) {
+    res.json({
+      success: false,
+      message: "User not found",
+      error: {
+        code: 404,
+        description: err.message || "User not found!",
+      },
+    });
+  }
+};
+
 export {
   createNewUser,
   getAllUser,
@@ -217,4 +259,5 @@ export {
   deleteUserByUserId,
   addNewOrders,
   getAllOrdersForASingleUser,
+  calSingleUserOrdersTotalPrice,
 };
