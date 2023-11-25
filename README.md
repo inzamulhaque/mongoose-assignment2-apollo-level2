@@ -24,7 +24,7 @@ In this assignment we create some api. API name and endpoint:
 - Retrieve all orders for a specific user (GET /api/users/:userId/orders)
 - Calculate Total Price of Orders for a Specific User (GET /api/users/:userId/orders/total-price)
 
-## Run the application locally?
+## How to run the application locally?
 
 If you need to run this application locally so follow this process.
 
